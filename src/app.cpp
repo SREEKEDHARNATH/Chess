@@ -37,16 +37,28 @@ void c2Run(){
                 case SDL_KEYDOWN:
                     c2KReg(e.key);
                     break;
+                case SDL_MOUSEMOTION:
+                    c2MReg(e.motion);
+                    break;
+                case SDL_MOUSEWHEEL:
+                    c2MReg(e.wheel);
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                case SDL_MOUSEBUTTONDOWN:
+                    c2MReg(e.button);
+                    break;
             }
         }
 
         if (c2KIsPressed(SDLK_ESCAPE)){
             running=false;
         }
+        
         SDL_RenderClear(c2GetRenderer());
         SDL_RenderPresent(c2GetRenderer());
         
         c2KUpdate();
+        c2MUpdate();
         SDL_Delay(1000/fps);
     }
 }
