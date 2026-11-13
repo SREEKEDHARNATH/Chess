@@ -2,10 +2,12 @@
 #include "SDL.h"
 #include "SDL_error.h"
 #include "SDL_events.h"
+#include "SDL_keycode.h"
 #include "SDL_render.h"
 #include "SDL_video.h"
 #include "SDL_image.h"
 #include "api.hpp"
+#include "listeners.hpp"
 #include <iostream>
 #include <utility>
 
@@ -31,12 +33,20 @@ void c2Run(){
                 case SDL_QUIT:
                     running=false;
                     break;
+                case SDL_KEYUP:
+                case SDL_KEYDOWN:
+                    c2KReg(e.key);
+                    break;
             }
         }
 
+        if (c2KIsPressed(SDLK_ESCAPE)){
+            running=false;
+        }
         SDL_RenderClear(c2GetRenderer());
         SDL_RenderPresent(c2GetRenderer());
         
+        c2KUpdate();
         SDL_Delay(1000/fps);
     }
 }
