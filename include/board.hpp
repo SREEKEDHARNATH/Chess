@@ -13,14 +13,14 @@ enum pos{
     H
 };
 enum ind{
-    ONE,
-    TWO,
-    THREE,
-    FOUR,
-    FIVE,
-    SIX,
-    SEVEN,
-    EIGHT
+    ONE=7,
+    TWO=6,
+    THREE=5,
+    FOUR=4,
+    FIVE=3,
+    SIX=2,
+    SEVEN=1,
+    EIGHT=0
 };
 
 struct square{

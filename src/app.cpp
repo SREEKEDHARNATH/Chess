@@ -6,9 +6,9 @@
 #include "SDL_render.h"
 #include "SDL_video.h"
 #include "SDL_image.h"
-#include "api.hpp"
 #include "board.hpp"
 #include "listeners.hpp"
+#include "pieces.hpp"
 #include <iostream>
 #include <utility>
 
@@ -26,7 +26,7 @@ void c2Run(){
     SDL_Event e;
     bool running=true;
     float fps=60;
-    
+
     c2BInit();
     SDL_ShowWindow(c2GetWindow());
     while (running){
