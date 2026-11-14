@@ -16,6 +16,175 @@ void offload(){
     b.state=SDL_RELEASED;
     c2MReg(b);
 }
+void takepiece(square& s){
+    if (!s.isblack){
+        auto& rk = b.Rook;
+        auto& kn = b.Knight;
+        auto& bi = b.Bishop;
+        auto& pa = b.Pawn;
+        auto& q = b.Queen;
+        auto& k = b.King;
+
+        if (k.s==s){
+            k.s.ptr.reset();
+        }
+        if (q.s==s){
+            q.s.ptr.reset();
+        }
+        for (auto& o : rk){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+        for (auto& o : kn){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+        for (auto& o : bi){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+        for (auto& o : pa){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+        }
+    else {
+        auto& rk = w.Rook;
+        auto& kn = w.Knight;
+        auto& bi = w.Bishop;
+        auto& pa = w.Pawn;
+        auto& q = w.Queen;
+        auto& k = w.King;
+
+        if (k.s==s){
+            k.s.ptr.reset();
+        }
+        if (q.s==s){
+            q.s.ptr.reset();
+        }
+        for (auto& o : rk){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+        for (auto& o : kn){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+        for (auto& o : bi){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+        for (auto& o : pa){
+            if (o.s==s){
+                o.s.ptr.reset();
+            }
+        }
+    }
+}
+bool amiok(square& s){
+    if (s.isblack){
+        auto& rk = b.Rook;
+        auto& kn = b.Knight;
+        auto& bi = b.Bishop;
+        auto& pa = b.Pawn;
+        auto& q = b.Queen;
+        auto& k = b.King;
+        if (k.s==s){
+            if (k.s.ptr.get()!=s.ptr.get()){
+                return false;   
+            }
+        }
+        if (q.s==s){
+            if (q.s.ptr.get()!=s.ptr.get()){
+                return false; 
+            }
+        }
+        for (auto& o : rk){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+        for (auto& o : kn){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+        for (auto& o : bi){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+        for (auto& o : pa){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+        }
+    else {
+        auto& rk = w.Rook;
+        auto& kn = w.Knight;
+        auto& bi = w.Bishop;
+        auto& pa = w.Pawn;
+        auto& q = w.Queen;
+        auto& k = w.King;
+
+        if (k.s==s){
+            if (k.s.ptr.get()!=s.ptr.get()){
+                return false;   
+            }
+        }
+        if (q.s==s){
+            if (k.s.ptr.get()!=s.ptr.get()){
+                return false;   
+            }
+        }
+        for (auto& o : rk){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+        for (auto& o : kn){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+        for (auto& o : bi){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+        for (auto& o : pa){
+            if (o.s==s){
+                if (o.s.ptr.get()!=s.ptr.get()){
+                    return false; 
+                }
+            }
+        }
+    }
+    return true;
+}
+
 void move(square& s, int& clicks){
     auto mouse = c2MGetRect();
     SDL_Rect r= c2BGetSquare(s.p, s.i).getR();
@@ -32,14 +201,21 @@ void move(square& s, int& clicks){
     }
     if (clicks==1){
         if (c2MIsPressed(SDL_BUTTON_LEFT)){
+            auto oldp=s.p;
+            auto oldi=s.i;
             s.p=(pos)(c2MGetX()/96);
             s.i=(ind)(c2MGetY()/96);
+            if (!amiok(s)){
+                s.p=oldp;
+                s.i=oldi;
+            }
+            takepiece(s);
             clicks=0;
             offload();
         }
     }
 }
-bool square::operator==(const square& s){
+bool square::operator==(const square& s) const{
     return ((int)p == (int)s.p) && ((int)i == (int)s.i);
 }
 SDL_Rect square::getR(){

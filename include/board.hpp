@@ -29,7 +29,7 @@ struct square{
     std::shared_ptr<SDL_Texture> ptr;
     pos p;
     ind i;
-    bool operator==(const square& s);
+    bool operator==(const square& s) const;
     SDL_Rect getR();
 };
 void move(square& s, int& clicks);
