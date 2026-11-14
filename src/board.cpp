@@ -117,6 +117,16 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square&
     }
     return true;
 }
+bool isThisLegalKingMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
+    if (std::abs(i-oldi) > 1){
+        return false;
+    }
+    if (std::abs(p-oldp) > 1){
+        return false;
+    }
+    
+    return true;
+}
 void move(square& s, int& clicks, Type t){
     auto mouse = c2MGetRect();
     SDL_Rect r= c2BGetSquare(s.p, s.i).getR();
@@ -143,6 +153,12 @@ void move(square& s, int& clicks, Type t){
                     amisafe=isThisLegalPawnMove(oldp, oldi, s.p, s.i, s.isblack, s);
                 }
             }
+            if (t==Type::KING){
+                if (amisafe){
+                    amisafe=isThisLegalKingMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                }
+            }
+            
             if (!amisafe){
                 s.p=oldp;
                 s.i=oldi;
