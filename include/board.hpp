@@ -25,11 +25,14 @@ enum ind{
 
 struct square{
     bool isblack=false;
+    bool ispiece=true;
     std::shared_ptr<SDL_Texture> ptr;
     pos p;
     ind i;
+    bool operator==(const square& s);
+    SDL_Rect getR();
 };
-
+void move(square& s, int& clicks);
 void c2BInit();
 square c2BGetSquare(pos p, ind i);
 void c2BDraw();

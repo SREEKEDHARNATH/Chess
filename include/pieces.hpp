@@ -3,6 +3,7 @@
 #include "board.hpp"
 struct c2Piece{
     square s;
+    int clicks=0;
     void draw();
 };
 struct c2Pawn : public c2Piece{
