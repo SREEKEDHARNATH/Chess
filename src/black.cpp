@@ -73,23 +73,23 @@ void black::init(){
 
 void black::draw(){
     for (auto& p : Rook){
-        move(p.s, p.clicks);
+        move(p.s, p.clicks,Type::ROOK);
         p.draw();
     }
     for (auto& p : Knight){
-        move(p.s, p.clicks);
+        move(p.s, p.clicks,Type::KNIGHT);
         p.draw();
     }
     for (auto& p : Bishop){
-        move(p.s, p.clicks);
+        move(p.s, p.clicks,Type::BISHOP);
         p.draw();
     }
-    move(Queen.s, Queen.clicks);
+    move(Queen.s, Queen.clicks,Type::QUEEN);
     Queen.draw();
-    move(King.s, King.clicks);
+    move(King.s, King.clicks,Type::KING);
     King.draw();
     for (auto& p : Pawn){
-        move(p.s, p.clicks);
+        move(p.s, p.clicks,Type::PAWN);
         p.draw();
     }
 }

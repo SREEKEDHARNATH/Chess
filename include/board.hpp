@@ -32,7 +32,15 @@ struct square{
     bool operator==(const square& s) const;
     SDL_Rect getR();
 };
-void move(square& s, int& clicks);
+enum Type{
+    PAWN,
+    ROOK,
+    KNIGHT,
+    BISHOP,
+    QUEEN,
+    KING
+};
+void move(square& s, int& clicks, Type t);
 void c2BInit();
 square c2BGetSquare(pos p, ind i);
 void c2BDraw();

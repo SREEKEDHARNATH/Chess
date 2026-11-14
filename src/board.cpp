@@ -4,188 +4,35 @@
 #include "app.hpp"
 #include "black.hpp"
 #include "listeners.hpp"
+#include "movement.hpp"
 #include "white.hpp"
+#include <cstdlib>
 
 square squares[8][8];
 white w;
 black b;
-
-void offload(){
-    SDL_MouseButtonEvent b;
-    b.button=SDL_BUTTON_LEFT;
-    b.state=SDL_RELEASED;
-    c2MReg(b);
-}
-void takepiece(square& s){
-    if (!s.isblack){
-        auto& rk = b.Rook;
-        auto& kn = b.Knight;
-        auto& bi = b.Bishop;
-        auto& pa = b.Pawn;
-        auto& q = b.Queen;
-        auto& k = b.King;
-
-        if (k.s==s){
-            k.s.ptr.reset();
-        }
-        if (q.s==s){
-            q.s.ptr.reset();
-        }
-        for (auto& o : rk){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
-        }
-        for (auto& o : kn){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
-        }
-        for (auto& o : bi){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
-        }
-        for (auto& o : pa){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
-        }
-        }
-    else {
-        auto& rk = w.Rook;
-        auto& kn = w.Knight;
-        auto& bi = w.Bishop;
-        auto& pa = w.Pawn;
-        auto& q = w.Queen;
-        auto& k = w.King;
-
-        if (k.s==s){
-            k.s.ptr.reset();
-        }
-        if (q.s==s){
-            q.s.ptr.reset();
-        }
-        for (auto& o : rk){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
-        }
-        for (auto& o : kn){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
-        }
-        for (auto& o : bi){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
-        }
-        for (auto& o : pa){
-            if (o.s==s){
-                o.s.ptr.reset();
-            }
+bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, bool isblack){
+    if ((int)p != (int)oldp){
+        return false;
+    }
+    if (isblack){
+        if ((int)i < (int)oldi){
+            return false;
         }
     }
-}
-bool amiok(square& s){
-    if (s.isblack){
-        auto& rk = b.Rook;
-        auto& kn = b.Knight;
-        auto& bi = b.Bishop;
-        auto& pa = b.Pawn;
-        auto& q = b.Queen;
-        auto& k = b.King;
-        if (k.s==s){
-            if (k.s.ptr.get()!=s.ptr.get()){
-                return false;   
-            }
-        }
-        if (q.s==s){
-            if (q.s.ptr.get()!=s.ptr.get()){
-                return false; 
-            }
-        }
-        for (auto& o : rk){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
-        for (auto& o : kn){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
-        for (auto& o : bi){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
-        for (auto& o : pa){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
-        }
     else {
-        auto& rk = w.Rook;
-        auto& kn = w.Knight;
-        auto& bi = w.Bishop;
-        auto& pa = w.Pawn;
-        auto& q = w.Queen;
-        auto& k = w.King;
-
-        if (k.s==s){
-            if (k.s.ptr.get()!=s.ptr.get()){
-                return false;   
-            }
+        if ((int)i > (int)oldi){
+            return false;
         }
-        if (q.s==s){
-            if (k.s.ptr.get()!=s.ptr.get()){
-                return false;   
-            }
-        }
-        for (auto& o : rk){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
-        for (auto& o : kn){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
-        for (auto& o : bi){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
-        for (auto& o : pa){
-            if (o.s==s){
-                if (o.s.ptr.get()!=s.ptr.get()){
-                    return false; 
-                }
-            }
-        }
+    }
+    
+    bool firstmove = oldi == ind::TWO || oldi == ind::SEVEN;
+    if (std::abs(i-oldi) > (firstmove ? 2 : 1)){
+        return false;
     }
     return true;
 }
-
-void move(square& s, int& clicks){
+void move(square& s, int& clicks, Type t){
     auto mouse = c2MGetRect();
     SDL_Rect r= c2BGetSquare(s.p, s.i).getR();
     if (SDL_HasIntersection(&mouse, &r)){
@@ -205,11 +52,17 @@ void move(square& s, int& clicks){
             auto oldi=s.i;
             s.p=(pos)(c2MGetX()/96);
             s.i=(ind)(c2MGetY()/96);
-            if (!amiok(s)){
+            bool amisafe=amiok(s,w,b);
+            if (t==Type::PAWN){
+                if (amisafe){
+                    amisafe=isThisLegalPawnMove(oldp, oldi, s.p, s.i, s.isblack);
+                }
+            }
+            if (!amisafe){
                 s.p=oldp;
                 s.i=oldi;
             }
-            takepiece(s);
+            takepiece(s,w,b);
             clicks=0;
             offload();
         }
