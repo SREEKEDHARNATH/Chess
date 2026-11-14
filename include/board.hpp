@@ -26,6 +26,7 @@ enum ind{
 struct square{
     bool isblack=false;
     bool ispiece=true;
+    bool isoccupied=false;
     std::shared_ptr<SDL_Texture> ptr;
     pos p;
     ind i;
@@ -42,5 +43,5 @@ enum Type{
 };
 void move(square& s, int& clicks, Type t);
 void c2BInit();
-square c2BGetSquare(pos p, ind i);
+square& c2BGetSquare(pos p, ind i);
 void c2BDraw();

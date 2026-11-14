@@ -11,6 +11,69 @@
 square squares[8][8];
 white w;
 black b;
+bool isthisvalidstraight(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
+    if (std::abs(i-oldi)){
+        if ((i-oldi)>0){
+            ind in = (ind)(((int)oldi)+1);
+            while (in != i){
+                if (c2BGetSquare(p, in).isoccupied){
+                    return false;
+                }
+                in = (ind)(((int)in)+1);
+            }
+        }
+        else {
+            ind in = (ind)(((int)oldi)-1);
+            while (in != i){
+                if (c2BGetSquare(p, in).isoccupied){
+                    return false;
+                }
+                in = (ind)(((int)in)-1);
+            }
+        }
+    }
+    else if(std::abs(p-oldp)){
+        if ((p-oldp)>0){
+            pos po = (pos)(((int)oldp)+1);
+            while (po != p){
+                if (c2BGetSquare(po, i).isoccupied){
+                    return false;
+                }
+                po = (pos)(((int)po)+1);
+            }
+        }
+        else {
+            pos po = (pos)(((int)oldp)-1);
+            while (po != p){
+                if (c2BGetSquare(po, i).isoccupied){
+                    return false;
+                }
+                po = (pos)(((int)po)-1);
+            }
+        }
+    }
+    return true;
+}
+bool isthisvaliddiagonalmove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
+    int x=1;
+    int y=1;
+    if ((int)p<(int)oldp){
+        x=-1;
+    }
+    if ((int)i<(int)oldi){
+        y=-1;
+    }
+    pos po = (pos)(((int)oldp)+x);
+    ind in = (ind)(((int)oldi)+y);
+    while (po != p || in != i){
+        if (c2BGetSquare(po, in).isoccupied){
+            return false;
+        }
+        po = (pos)(((int)po)+x);
+        in = (ind)(((int)in)+y);
+    }
+    return true;
+}
 bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
     if (isblack){
         if ((int)i < (int)oldi){
@@ -127,6 +190,19 @@ bool isThisLegalKingMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square&
     
     return true;
 }
+bool isThisLegalRookMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
+    return (isthisvalidstraight(oldp, oldi, p, i, isblack, s) && !(std::abs(i-oldi) && std::abs(p-oldp)));
+}
+bool isThisLegalBishopMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
+    if (!(std::abs(i-oldi) && std::abs(p-oldp))){
+        return false;
+    }
+    return (isthisvaliddiagonalmove(oldp, oldi, p, i, isblack, s) && (std::abs(i-oldi) == std::abs(p-oldp)));
+}
+bool isThisLegalQueenMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
+    return isThisLegalRookMove(oldp, oldi, p, i, isblack, s) || isThisLegalBishopMove(oldp, oldi, p, i, isblack, s);
+}
+
 void move(square& s, int& clicks, Type t){
     auto mouse = c2MGetRect();
     SDL_Rect r= c2BGetSquare(s.p, s.i).getR();
@@ -158,10 +234,29 @@ void move(square& s, int& clicks, Type t){
                     amisafe=isThisLegalKingMove(oldp, oldi, s.p, s.i, s.isblack, s);
                 }
             }
+            if (t==Type::ROOK){
+                if (amisafe){
+                    amisafe=isThisLegalRookMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                }
+            }
+            if (t==Type::BISHOP){
+                if (amisafe){
+                    amisafe=isThisLegalBishopMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                }
+            }
+            if (t==Type::QUEEN){
+                if (amisafe){
+                    amisafe=isThisLegalQueenMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                }
+            }
             
             if (!amisafe){
                 s.p=oldp;
                 s.i=oldi;
+            }
+            else {
+                c2BGetSquare(oldp, oldi).isoccupied=false;
+                c2BGetSquare(s.p, s.i).isoccupied=true;
             }
             takepiece(s,w,b);
             clicks=0;
@@ -207,7 +302,7 @@ void c2BInit(){
     w.init();
     b.init();
 }
-square c2BGetSquare(pos p, ind i){
+square& c2BGetSquare(pos p, ind i){
     return squares[p][i];
 }
 void c2BDraw(){
