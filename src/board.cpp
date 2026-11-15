@@ -7,6 +7,7 @@
 #include "movement.hpp"
 #include "white.hpp"
 #include <cstdlib>
+#include <iostream>
 
 square squares[8][8];
 white w;
@@ -217,7 +218,64 @@ bool isThisLegalKnightMove(pos oldp, ind oldi, pos p, ind i, square& s){
     int ir=std::abs(i-oldi);
     return (pr==2 && ir==1) || (ir==2 && pr==1);
 }
-
+bool ischeck(bool forblack){
+    bool check=false;
+    if (forblack){
+        for (auto& p : b.Rook){
+            if (!check){
+                check=isThisLegalRookMove(p.s.p, p.s.i, w.King.s.p,w.King.s.i, w.King.s);
+            }
+        }
+        for (auto& p : b.Knight){
+            if (!check){
+                check=isThisLegalKnightMove(p.s.p, p.s.i, w.King.s.p,w.King.s.i, w.King.s);
+            }
+        }
+        for (auto& p : b.Bishop){
+            if (!check){
+                check=isThisLegalBishopMove(p.s.p, p.s.i, w.King.s.p,w.King.s.i, w.King.s);
+            }
+        }
+        if (!check){
+            check=isThisLegalQueenMove(b.Queen.s.p, b.Queen.s.i, w.King.s.p,w.King.s.i, w.King.s);
+        }
+        for (auto& p : b.Pawn){
+            if (!check){
+                check=isThisLegalPawnMove(p.s.p, p.s.i, w.King.s.p,w.King.s.i, b.King.s);
+            }
+        }
+    }
+    else {
+        for (auto& p : w.Rook){
+            if (!check){
+                check=isThisLegalRookMove(p.s.p, p.s.i, b.King.s.p,b.King.s.i, w.King.s);
+            }
+        }
+        for (auto& p : w.Knight){
+            if (!check){
+                check=isThisLegalKnightMove(p.s.p, p.s.i, b.King.s.p,b.King.s.i, w.King.s);
+            }
+        }
+        for (auto& p : w.Bishop){
+            if (!check){
+                check=isThisLegalBishopMove(p.s.p, p.s.i, b.King.s.p,b.King.s.i, w.King.s);
+            }
+        }
+        if (!check){
+            check=isThisLegalQueenMove(w.Queen.s.p, w.Queen.s.i, b.King.s.p,b.King.s.i, w.King.s);
+        }
+        for (auto& p : w.Pawn){
+            if (!check){
+                check=isThisLegalPawnMove(p.s.p, p.s.i, b.King.s.p,b.King.s.i, b.King.s);
+            }
+        }
+    }
+    
+    if (check){
+        std::cout << "check\n";
+    }
+    return check;
+}
 void move(square& s, int& clicks, Type t){
     auto mouse = c2MGetRect();
     SDL_Rect r= c2BGetSquare(s.p, s.i).getR();
@@ -267,6 +325,9 @@ void move(square& s, int& clicks, Type t){
             else {
                 c2BGetSquare(oldp, oldi).isoccupied=false;
                 c2BGetSquare(s.p, s.i).isoccupied=true;
+                if (!ischeck(s.isblack)){
+                    ischeck(!s.isblack);
+                }
             }
             takepiece(s,w,b);
             clicks=0;
