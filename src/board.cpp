@@ -7,7 +7,6 @@
 #include "movement.hpp"
 #include "white.hpp"
 #include <cstdlib>
-#include <iostream>
 
 square squares[8][8];
 white w;
@@ -213,6 +212,11 @@ bool isThisLegalQueenMove(pos oldp, ind oldi, pos p, ind i, square& s){
     
     return a;
 }
+bool isThisLegalKnightMove(pos oldp, ind oldi, pos p, ind i, square& s){
+    int pr=std::abs(p-oldp);
+    int ir=std::abs(i-oldi);
+    return (pr==2 && ir==1) || (ir==2 && pr==1);
+}
 
 void move(square& s, int& clicks, Type t){
     auto mouse = c2MGetRect();
@@ -235,29 +239,24 @@ void move(square& s, int& clicks, Type t){
             s.p=(pos)(c2MGetX()/96);
             s.i=(ind)(c2MGetY()/96);
             bool amisafe=amiok(s,w,b);
-            if (t==Type::PAWN){
-                if (amisafe){
+            if (amisafe){
+                if (t==Type::PAWN){
                     amisafe=isThisLegalPawnMove(oldp, oldi, s.p, s.i, s);
                 }
-            }
-            else if (t==Type::KING){
-                if (amisafe){
+                else if (t==Type::KING){
                     amisafe=isThisLegalKingMove(oldp, oldi, s.p, s.i, s);
                 }
-            }
-            else if (t==Type::ROOK){
-                if (amisafe){
+                else if (t==Type::ROOK){
                     amisafe=isThisLegalRookMove(oldp, oldi, s.p, s.i, s);
                 }
-            }
-            else if (t==Type::BISHOP){
-                if (amisafe){
+                else if (t==Type::BISHOP){
                     amisafe=isThisLegalBishopMove(oldp, oldi, s.p, s.i, s);
                 }
-            }
-            else if (t==Type::QUEEN){
-                if (amisafe){
+                else if (t==Type::QUEEN){
                     amisafe=isThisLegalQueenMove(oldp, oldi, s.p, s.i, s);
+                }
+                else if (t==Type::KNIGHT){
+                    amisafe=isThisLegalKnightMove(oldp, oldi, s.p, s.i, s);
                 }
             }
             
