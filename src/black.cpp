@@ -21,6 +21,7 @@ void black::init(){
         if (i==0){
             for (int j=0;j<2;j++){
                 auto& s = Rook[j].s;
+                c2BGetSquare(s.p, s.i).isoccupied=true;
                 s.p= j == 0 ? cup : (pos)(7-cup);
                 s.i= cui;
                 s.isblack=true;
@@ -30,6 +31,7 @@ void black::init(){
         else if (i==1){
             for (int j=0;j<2;j++){
                 auto& s = Knight[j].s;
+                c2BGetSquare(s.p, s.i).isoccupied=true;
                 s.p= j == 0 ? cup : (pos)(7-cup);
                 s.i= cui;
                 s.isblack=true;
@@ -39,6 +41,7 @@ void black::init(){
         else if (i==2){
             for (int j=0;j<2;j++){
                 auto& s = Bishop[j].s;
+                c2BGetSquare(s.p, s.i).isoccupied=true;
                 s.p= j == 0 ? cup : (pos)(7-cup);
                 s.i= cui;
                 s.isblack=true;
@@ -50,17 +53,20 @@ void black::init(){
             Queen.s.i=cui;
             Queen.s.isblack=true;
             Queen.s.ptr=bqueen.get();
+            c2BGetSquare(Queen.s.p, Queen.s.i).isoccupied=true;
         }
         else if (i==4){
             King.s.p=cup;
             King.s.i=cui;
             King.s.isblack=true;
             King.s.ptr=bking.get();
+            c2BGetSquare(King.s.p, King.s.i).isoccupied=true;
         }
         else {
             for (int i=0;i<8;i++){
                 cup=(pos)i;
                 cui = ind::SEVEN;
+                c2BGetSquare(Pawn[i].s.p, Pawn[i].s.i).isoccupied=true;
                 Pawn[i].s.p=cup;
                 Pawn[i].s.i=cui;
                 Pawn[i].s.isblack=true;

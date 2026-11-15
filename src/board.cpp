@@ -7,75 +7,14 @@
 #include "movement.hpp"
 #include "white.hpp"
 #include <cstdlib>
+#include <iostream>
 
 square squares[8][8];
 white w;
 black b;
-bool isthisvalidstraight(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
-    if (std::abs(i-oldi)){
-        if ((i-oldi)>0){
-            ind in = (ind)(((int)oldi)+1);
-            while (in != i){
-                if (c2BGetSquare(p, in).isoccupied){
-                    return false;
-                }
-                in = (ind)(((int)in)+1);
-            }
-        }
-        else {
-            ind in = (ind)(((int)oldi)-1);
-            while (in != i){
-                if (c2BGetSquare(p, in).isoccupied){
-                    return false;
-                }
-                in = (ind)(((int)in)-1);
-            }
-        }
-    }
-    else if(std::abs(p-oldp)){
-        if ((p-oldp)>0){
-            pos po = (pos)(((int)oldp)+1);
-            while (po != p){
-                if (c2BGetSquare(po, i).isoccupied){
-                    return false;
-                }
-                po = (pos)(((int)po)+1);
-            }
-        }
-        else {
-            pos po = (pos)(((int)oldp)-1);
-            while (po != p){
-                if (c2BGetSquare(po, i).isoccupied){
-                    return false;
-                }
-                po = (pos)(((int)po)-1);
-            }
-        }
-    }
-    return true;
-}
-bool isthisvaliddiagonalmove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
-    int x=1;
-    int y=1;
-    if ((int)p<(int)oldp){
-        x=-1;
-    }
-    if ((int)i<(int)oldi){
-        y=-1;
-    }
-    pos po = (pos)(((int)oldp)+x);
-    ind in = (ind)(((int)oldi)+y);
-    while (po != p || in != i){
-        if (c2BGetSquare(po, in).isoccupied){
-            return false;
-        }
-        po = (pos)(((int)po)+x);
-        in = (ind)(((int)in)+y);
-    }
-    return true;
-}
-bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
-    if (isblack){
+
+bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
+    if (s.isblack){
         if ((int)i < (int)oldi){
             return false;
         }
@@ -89,7 +28,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square&
     if (std::abs(i-oldi) > (firstmove ? 2 : 1)){
         return false;
     }
-    if (isblack){
+    if (s.isblack){
         for (auto& r : w.Rook){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
                 return true;
@@ -180,7 +119,74 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square&
     }
     return true;
 }
-bool isThisLegalKingMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
+bool isthisvalidstraight(pos oldp, ind oldi, pos p, ind i, square& s){
+    if (std::abs(i-oldi)){
+        if ((i-oldi)>0){
+            ind in = (ind)(((int)oldi)+1);
+            while (in != i){
+                if (c2BGetSquare(p, in).isoccupied){
+                    return false;
+                }
+                in = (ind)(((int)in)+1);
+            }
+        }
+        else {
+            ind in = (ind)(((int)oldi)-1);
+            while (in != i){
+                if (c2BGetSquare(p, in).isoccupied){
+                    return false;
+                }
+                in = (ind)(((int)in)-1);
+            }
+        }
+    }
+    else if(std::abs(p-oldp)){
+        if ((p-oldp)>0){
+            pos po = (pos)(((int)oldp)+1);
+            while (po != p){
+                if (c2BGetSquare(po, i).isoccupied){
+                    return false;
+                }
+                po = (pos)(((int)po)+1);
+            }
+        }
+        else {
+            pos po = (pos)(((int)oldp)-1);
+            while (po != p){
+                if (c2BGetSquare(po, i).isoccupied){
+                    return false;
+                }
+                po = (pos)(((int)po)-1);
+            }
+        }
+    }
+    return true;
+}
+bool isthisvaliddiagonalmove(pos oldp, ind oldi, pos p, ind i, square& s){
+    int x=1;
+    int y=1;
+    if (std::abs((int)p-(int)oldp) != std::abs((int)i-(int)oldi)){
+        return false;
+    }
+    if ((int)p<(int)oldp){
+        x=-1;
+    }
+    if ((int)i<(int)oldi){
+        y=-1;
+    }
+    pos po = (pos)(((int)oldp)+x);
+    ind in = (ind)(((int)oldi)+y);
+    while (po != p || in != i){
+        if (c2BGetSquare(po, in).isoccupied){
+            return false;
+        }
+        po = (pos)(((int)po)+x);
+        in = (ind)(((int)in)+y);
+    }
+    return true;
+}
+
+bool isThisLegalKingMove(pos oldp, ind oldi, pos p, ind i, square& s){
     if (std::abs(i-oldi) > 1){
         return false;
     }
@@ -190,17 +196,22 @@ bool isThisLegalKingMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square&
     
     return true;
 }
-bool isThisLegalRookMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
-    return (isthisvalidstraight(oldp, oldi, p, i, isblack, s) && !(std::abs(i-oldi) && std::abs(p-oldp)));
+bool isThisLegalRookMove(pos oldp, ind oldi, pos p, ind i, square& s){
+    return (isthisvalidstraight(oldp, oldi, p, i, s));
 }
-bool isThisLegalBishopMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
-    if (!(std::abs(i-oldi) && std::abs(p-oldp))){
-        return false;
+bool isThisLegalBishopMove(pos oldp, ind oldi, pos p, ind i, square& s){
+    return (isthisvaliddiagonalmove(oldp, oldi, p, i, s));
+}
+bool isThisLegalQueenMove(pos oldp, ind oldi, pos p, ind i, square& s){
+    bool a;
+    if (std::abs(i-oldi) && std::abs(p-oldp)){
+        a = isThisLegalBishopMove(oldp, oldi, p, i, s);
     }
-    return (isthisvaliddiagonalmove(oldp, oldi, p, i, isblack, s) && (std::abs(i-oldi) == std::abs(p-oldp)));
-}
-bool isThisLegalQueenMove(pos oldp, ind oldi, pos p, ind i, bool isblack, square& s){
-    return isThisLegalRookMove(oldp, oldi, p, i, isblack, s) || isThisLegalBishopMove(oldp, oldi, p, i, isblack, s);
+    else {
+        a = isThisLegalRookMove(oldp, oldi, p, i, s);
+    }
+    
+    return a;
 }
 
 void move(square& s, int& clicks, Type t){
@@ -226,27 +237,27 @@ void move(square& s, int& clicks, Type t){
             bool amisafe=amiok(s,w,b);
             if (t==Type::PAWN){
                 if (amisafe){
-                    amisafe=isThisLegalPawnMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                    amisafe=isThisLegalPawnMove(oldp, oldi, s.p, s.i, s);
                 }
             }
-            if (t==Type::KING){
+            else if (t==Type::KING){
                 if (amisafe){
-                    amisafe=isThisLegalKingMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                    amisafe=isThisLegalKingMove(oldp, oldi, s.p, s.i, s);
                 }
             }
-            if (t==Type::ROOK){
+            else if (t==Type::ROOK){
                 if (amisafe){
-                    amisafe=isThisLegalRookMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                    amisafe=isThisLegalRookMove(oldp, oldi, s.p, s.i, s);
                 }
             }
-            if (t==Type::BISHOP){
+            else if (t==Type::BISHOP){
                 if (amisafe){
-                    amisafe=isThisLegalBishopMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                    amisafe=isThisLegalBishopMove(oldp, oldi, s.p, s.i, s);
                 }
             }
-            if (t==Type::QUEEN){
+            else if (t==Type::QUEEN){
                 if (amisafe){
-                    amisafe=isThisLegalQueenMove(oldp, oldi, s.p, s.i, s.isblack, s);
+                    amisafe=isThisLegalQueenMove(oldp, oldi, s.p, s.i, s);
                 }
             }
             

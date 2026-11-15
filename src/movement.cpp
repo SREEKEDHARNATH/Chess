@@ -141,8 +141,8 @@ bool amiok(square& s, white& w, black& b){
             }
         }
         if (q.s==s){
-            if (k.s.ptr.get()!=s.ptr.get()){
-                return false;   
+            if (q.s.ptr.get()!=s.ptr.get()){
+                return false; 
             }
         }
         for (auto& o : rk){
@@ -173,6 +173,7 @@ bool amiok(square& s, white& w, black& b){
                 }
             }
         }
+
     }
     return true;
 }
