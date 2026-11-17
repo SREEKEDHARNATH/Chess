@@ -13,6 +13,7 @@ square squares[8][8];
 white w;
 black b;
 
+bool ischeck(bool forblack);
 bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
     if (s.isblack){
         if ((int)i < (int)oldi){
@@ -31,7 +32,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
     if (s.isblack){
         for (auto& r : w.Rook){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
@@ -39,7 +40,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
         }
         for (auto& r : w.Knight){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
@@ -47,7 +48,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
         }
         for (auto& r : w.Bishop){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
@@ -55,17 +56,17 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
         }
         for (auto& r : w.Pawn){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
             }
         }
         if (std::abs((int)w.Queen.s.p - (int)oldp) == 1 && std::abs((int)w.Queen.s.i - (int)oldi) == 1){
-            return true;
+            return !ischeck(!s.isblack);
         }
         if (std::abs((int)w.King.s.p - (int)oldp) == 1 && std::abs((int)w.King.s.i - (int)oldi) == 1){
-            return true;
+            return !ischeck(!s.isblack);
         }
         if (s == w.Queen.s || s==w.King.s){
             return false;
@@ -74,7 +75,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
     else {
         for (auto& r : b.Rook){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
@@ -82,7 +83,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
         }
         for (auto& r : b.Knight){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
@@ -90,7 +91,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
         }
         for (auto& r : b.Bishop){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
@@ -98,17 +99,17 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
         }
         for (auto& r : b.Pawn){
             if (std::abs((int)r.s.p - (int)oldp) == 1 && std::abs((int)r.s.i - (int)oldi) == 1){
-                return true;
+                return !ischeck(!s.isblack);
             }
             if (r.s == s){
                 return false;
             }
         }
         if (std::abs((int)b.Queen.s.p - (int)oldp) == 1 && std::abs((int)b.Queen.s.i - (int)oldi) == 1){
-            return true;
+            return !ischeck(!s.isblack);
         }
         if (std::abs((int)b.King.s.p - (int)oldp) == 1 && std::abs((int)b.King.s.i - (int)oldi) == 1){
-            return true;
+            return !ischeck(!s.isblack);
         }
         if (s == b.Queen.s || s==b.King.s){
             return false;
@@ -117,7 +118,7 @@ bool isThisLegalPawnMove(pos oldp, ind oldi, pos p, ind i, square& s){
     if ((int)p != (int)oldp){
         return false;
     }
-    return true;
+    return !ischeck(!s.isblack);
 }
 bool isthisvalidstraight(pos oldp, ind oldi, pos p, ind i, square& s){
     if (std::abs(i-oldi)){
@@ -160,7 +161,7 @@ bool isthisvalidstraight(pos oldp, ind oldi, pos p, ind i, square& s){
             }
         }
     }
-    return true;
+    return !ischeck(!s.isblack);
 }
 bool isthisvaliddiagonalmove(pos oldp, ind oldi, pos p, ind i, square& s){
     int x=1;
@@ -216,7 +217,7 @@ bool isThisLegalQueenMove(pos oldp, ind oldi, pos p, ind i, square& s){
 bool isThisLegalKnightMove(pos oldp, ind oldi, pos p, ind i, square& s){
     int pr=std::abs(p-oldp);
     int ir=std::abs(i-oldi);
-    return (pr==2 && ir==1) || (ir==2 && pr==1);
+    return ((pr==2 && ir==1) || (ir==2 && pr==1));
 }
 bool ischeck(bool forblack){
     bool check=false;
@@ -270,9 +271,8 @@ bool ischeck(bool forblack){
             }
         }
     }
-    
     if (check){
-        std::cout << "check\n";
+        std::cout << "Check\n";
     }
     return check;
 }
@@ -299,22 +299,25 @@ void move(square& s, int& clicks, Type t){
             bool amisafe=amiok(s,w,b);
             if (amisafe){
                 if (t==Type::PAWN){
-                    amisafe=isThisLegalPawnMove(oldp, oldi, s.p, s.i, s);
+                    amisafe=!ischeck(!s.isblack) && isThisLegalPawnMove(oldp, oldi, s.p, s.i, s);
                 }
                 else if (t==Type::KING){
-                    amisafe=isThisLegalKingMove(oldp, oldi, s.p, s.i, s);
+                    amisafe=!ischeck(!s.isblack) && isThisLegalKingMove(oldp, oldi, s.p, s.i, s);
                 }
                 else if (t==Type::ROOK){
-                    amisafe=isThisLegalRookMove(oldp, oldi, s.p, s.i, s);
+                    amisafe=!ischeck(!s.isblack) && isThisLegalRookMove(oldp, oldi, s.p, s.i, s);
                 }
                 else if (t==Type::BISHOP){
-                    amisafe=isThisLegalBishopMove(oldp, oldi, s.p, s.i, s);
+                    amisafe=!ischeck(!s.isblack) && isThisLegalBishopMove(oldp, oldi, s.p, s.i, s);
                 }
                 else if (t==Type::QUEEN){
-                    amisafe=isThisLegalQueenMove(oldp, oldi, s.p, s.i, s);
+                    amisafe=!ischeck(!s.isblack) && isThisLegalQueenMove(oldp, oldi, s.p, s.i, s);
                 }
                 else if (t==Type::KNIGHT){
-                    amisafe=isThisLegalKnightMove(oldp, oldi, s.p, s.i, s);
+                    amisafe=!ischeck(!s.isblack) && isThisLegalKnightMove(oldp, oldi, s.p, s.i, s);
+                }
+                if (amisafe){
+                    ischeck(s.isblack);
                 }
             }
             
@@ -325,9 +328,6 @@ void move(square& s, int& clicks, Type t){
             else {
                 c2BGetSquare(oldp, oldi).isoccupied=false;
                 c2BGetSquare(s.p, s.i).isoccupied=true;
-                if (!ischeck(s.isblack)){
-                    ischeck(!s.isblack);
-                }
             }
             takepiece(s,w,b);
             clicks=0;
