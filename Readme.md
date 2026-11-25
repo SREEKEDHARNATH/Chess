@@ -1,5 +1,5 @@
 # Chess
-
+You need the latest distro with updates.
 # Features that i have implemented as of now
 pieces moves as they are in real chess it outputs check if its in check.
 
