@@ -1,5 +1,11 @@
 # Chess
 You need the latest distro with updates.
+# Description
+This is the classical chess with all the pieces.
+
+The logic behind this is instead of a piece checking for occupied pieces we take the board as an array of boolean values and mark them as occupied or not.
+
+Check works by if we want to if white is in check we take all black pieces and see if its legal to move the black piece to the white king if allowed its check.
 # Features that i have implemented as of now
 pieces moves as they are in real chess it outputs check if its in check.
 
